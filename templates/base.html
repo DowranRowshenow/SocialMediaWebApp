@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+{% load static %}
+{% load i18n %}
+<html lang="en">
+    <head>
+        <title>{% block title %}{% endblock title %} - Social Media App</title>
+        <meta charset="UTF-8">
+        <meta name="title" content="Social Media App"/>
+        <meta name="description" content="Social Media App"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.png' %}">
+        <link rel="stylesheet" href="{% static 'library/styles/all.css' %}">
+        <link rel="stylesheet" href="{% static 'library/styles/darkui.css' %}">
+        <script src="{% static 'library/scripts/darkui.js' %}"></script>
+        <link rel="stylesheet" href="{% static 'styles/base.css' %}">
+        <link rel="stylesheet" href="{% static 'styles/modern.css' %}">
+        {% block head %}
+        {% endblock head %}
+    </head>
+    <body class="zoom cur_default">
+        {% block content %}
+        {% endblock content %}
+        {% block scripts %}
+        {% endblock scripts %}
+    </body>
+    <section id="image_section" class="section z_15" onclick="close_section(image_section);">
+        <div style="margin-top: 80px;"></div>
+        <div class="image_section box center">
+            <div class="box_body">
+                <div class="field">
+                    <img id="image_section_image"/>
+                </div>
+            </div>
+        </div>
+    </section>
+</HTML>

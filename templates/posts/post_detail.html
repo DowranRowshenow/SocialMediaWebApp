@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}
+{% trans 'Posts' %}
+{% endblock title %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'styles/main.css' %}"/>
+{% endblock head %}
+
+{% block content %}
+<section>
+    <form id="delete_post_form" method="post" action="{% url 'delete_post' post.pk %}">{% csrf_token %}</form>
+
+    {% include 'topbar.html' %}
+
+    <!--
+    <div class="back_button">
+        <div id="cancel_post_detail" class="item_active cur_pointer font_light" onclick="window.location='{% url 'posts' %}';">
+            <i class="item_icon fa fa-arrow-left"></i>
+            <a class="item_text font_light">{% trans "Back" %}</a>
+        </div>
+    </div>
+    -->
+
+    <div class="main center">
+        <div id="scroll_top" class="item cur_pointer" onclick="scrollToTop();">
+            <i class="item_icon fa fa-arrow-up font_light"></i>
+            <a class="item_text font_light">{% trans "Scroll to top" %}</a>
+        </div>
+
+
+        <div id="chat_messages" class="modern-chat-messages posts vertical width_max scroll_y animations_0" onscroll="checkScroll();">
+            <div style="margin-top: 80px; background-color: transparent;"></div>
+
+            {% if post %}
+            <div class="post box center">
+                {% if post.user == request.user %}
+                <div class="box_head dark_blue">
+                    <div class="field horizontal cur_pointer" onclick="window.location='{% url 'user_profile' %}';">
+                {% else %}
+                <div class="box_head">
+                    <div class="field horizontal cur_pointer" onclick="window.location='{% url 'profile' post.user.id %}';">
+                {% endif %}
+                        <img class="post_user_image" src="{{ post.user.photo.url }}"/>
+                        <div class="vertical">
+                            <a class="box_head_title">{{ post.user.username }}</a>
+                            <div class="paragraph font_light">{{ post.user.email }}</div>
+                        </div>
+                    </div>
+                    {% if post.user == request.user %}
+                        {% if post.image %}
+                    <div class="field horizontal right cur_pointer font_light" onclick="open_section(edit_post_section, '{{ post.image.url }}', '{{ post.content }}', post_image_{{ post.id }});" onmouseover="post_icon_{{ post.id }}.classList.add('fa-bounce');" onmouseout="post_icon_{{ post.id }}.classList.remove('fa-bounce');">
+                        {% else %}
+                    <div class="field horizontal right cur_pointer font_light" onclick="open_section(edit_post_section, null, '{{ post.content }}');" onmouseover="post_icon_{{ post.id }}.classList.add('fa-bounce');" onmouseout="post_icon_{{ post.id }}.classList.remove('fa-bounce');">
+                        {% endif %}
+                        <label class="label post_item">{% trans "Edit Post" %}</label>
+                        <i id="post_icon_{{ post.id }}" class="fa fa-pencil"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="box_body">
+                    {% if post.image %}
+                    <img id="post_image_{{ post.id }}" class="post_image cur_pointer" src="{{ post.image.url }}" onclick="open_section(image_section, this.src);"/>
+                    {% endif %}
+                    {% if post.content %}
+                    <div class="field margin_left_20 left">
+                        <pre class="post_content paragraph font_16">{{ post.content }}</pre>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="box_footer">
+                    <div class="relative horizontal">
+                        <div class="field absolute_left">
+                            <label class="post_date_time label">{{ post.created_date_time|naturaltime }}</label>
+                        </div>
+                        <div class="field horizontal font_light center fa-bounce-hover cur_pointer">
+                            {% if post.comments.all.count %}
+                            <label id="post_comment_count" class="label">{{ post.comments.all.count }}</label>
+                            {% else %}
+                            <label id="post_comment_count" class="label">0</label>
+                            {% endif %}
+                            <i class="fa fa-message font_light post_item font_blue"></i>
+                        </div>
+                        <div class="field horizontal absolute_right">
+                            <i class="fa fa-thumbs-up font_light fa-shake-hover post_item cur_pointer font_green" onclick="window.location='{% url 'like_post' post.id %}';"></i>
+                            {% if post.liked_users.all.count %}
+                            <label id="likes" class="label">{{ post.liked_users.all.count }}</label>
+                            {% else %}
+                            <label id="likes" class="label">0</label>
+                            {% endif %}
+                            <i class="fa fa-thumbs-down font_light fa-shake-hover post_item cur_pointer font_red" onclick="window.location='{% url 'dislike_post' post.id %}';"></i>
+                            {% if post.disliked_users.all.count %}
+                            <label id="dislikes" class="label">{{ post.disliked_users.all.count }}</label>
+                            {% else %}
+                            <label id="dislikes" class="label">0</label>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% for comment in post.comments.all %}
+                {% if comment.user == request.user %}
+            <div class="right">
+                <div class="message_box_rigth right margin_right_20">
+                    <div class="message_right">
+                        <a class="message_text font_light">{{ comment.content }}</a>
+                    </div>
+                    <div>{{ comment.sent_date_time|naturaltime }}</div>
+                </div>
+            </div>
+                {% else %}
+            <div class="message_user message_box left">
+                <div class="user_field top cur_pointer" onclick="window.location='{% url 'profile' comment.user.id %}';">
+                    <img class="user_field_img radius_20" src="{{ comment.user.photo.url }}"></img>
+                </div>
+                <div class="message_field">
+                    <a class="message_field_text font_light cur_pointer" onclick="window.location='{% url 'profile' comment.user.id %}';">{{ comment.user.username }}</a>
+                    <div class="message">
+                        <a class="message_text font_light">{{ comment.content }}</a>
+                    </div>
+                    {{ comment.sent_date_time|naturaltime }}
+                </div>
+            </div>
+                {% endif %} 
+            {% endfor %}
+            <div id="chat_spacer" class="message_user spacer">&nbsp;</div>
+        </div>
+        <div id="scroll_bottom_chat" class="item cur_pointer" onclick="scrollToBottom();">
+            <i class="item_icon fa fa-arrow-down font_light"></i>
+            <a class="item_text font_light">{% trans "Scroll to bottom" %}</a>
+        </div>
+        <form id="send_form" class="sender bottom width_600 z_10" action="{% url 'comment_post' post.id %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="roomToken" value="{{ roomToken }}">
+            <i class="fa fa-microphone sender_icon cur_pointer font_light fa-fade-hover"></i>
+            <input id="chat_message_input" class="sender_input cur_text font_light" name="content" type="text" placeholder="{% trans 'Type a message' %}">
+            <i class="fa fa-plus-square sender_icon cur_pointer font_light fa-beat-hover"></i>
+            <i id="chat_message_submit" onclick="send_message();" class="fa fa-paper-plane sender_icon cur_pointer font_light fa-shake-hover"></i>
+        </form>
+    </div>
+
+</section>
+
+<section id="edit_post_section" class="section z_15">
+    <div class="box center width_500">
+        <form id="edit_post_form" method="post" enctype="multipart/form-data" action="{% url 'edit_post' post.pk %}">
+            {% csrf_token %}
+            <div class="box_head">
+                <a class="box_head_title">{% trans 'Edit Post' %}</a>
+                <i class="fa fa-close box_head_cancel cur_pointer" onclick="close_section(edit_post_section);"></i>
+            </div>
+            <div class="box_body">
+                <div class="field">
+                    <label class="label">{% trans "Description:" %}</label>
+                    <textarea id="edit_post_form_content_input" maxlength="249" class="input enter clear_this resize_none cur_text font_light" type="text" name="content" placeholder="{% trans 'Type something...' %}" oninput="TextArea(this);"></textarea>
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Image:" %}</label>
+                    <input id="edit_post_form_image_input" class="input clear_this cur_pointer font_light" type="file" name="image" accept="image/*">
+                </div>
+                <!--
+                <div class="field horizontal align_vertical_center">
+                    <label class="label margin_right_20">{% trans "Do not use image:" %}</label>
+                    <input id="edit_post_form_checkbox" class="input cur_pointer font_light" name="delete_image" type="checkbox">
+                </div>
+                -->
+            </div>
+            <div class="box_footer horizontal">
+                <div onclick="delete_post_form.submit();" class="button cur_pointer width_200 red">{% trans "Delete Post" %}</div>
+                <div class="center">&nbsp;</div>
+                <button onclick="" type="submit" class="button width_200 cur_pointer">{% trans "Save Post" %}</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% endblock content %}
+
+{% block scripts %}
+{% include 'scripts.html' %}
+    {{ post.hash|json_script:"json-postHash" }}
+<script src="{% static 'scripts/posts.js' %}"></script>
+{% endblock scripts %}

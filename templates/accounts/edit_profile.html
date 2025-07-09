@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}{% trans 'Main' %}{% endblock title %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'styles/main.css' %}"/>
+{% endblock head %}
+
+{% block content %}
+<section id="edit_profile_section" class="section z_10 visible">
+    <div class="box center width_500">
+        <form id="edit_profile_form" method="post" enctype="multipart/form-data" action="{% url 'edit_profile' request.user.pk %}">
+            {% csrf_token %}
+            <div class="box_head">
+                <a class="box_head_title">{% trans 'Edit Profile' %}</a>
+                <i class="fa fa-close box_head_cancel cur_pointer" onclick="window.location='{% url 'user_profile' %}?pg=profile';"></i>
+            </div>
+            <div class="box_body">
+                <div class="field">
+                    <label class="label">{% trans "First Name:" %}</label>
+                    <input class="input cur_text font_light" value="{{ request.user.first_name }}" type="text" maxlength="150" name="first_name">
+                    <a class="error clear_this">
+                        <ul>
+                        </ul>
+                    </a>
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Last Name:" %}</label>
+                    <input class="input cur_text font_light" value="{{ request.user.last_name }}" type="text" maxlength="150" name="last_name">
+                    <a class="error clear_this">
+                        <ul>
+                        </ul>
+                    </a>
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Biography:" %}</label>
+                    <textarea class="input resize_none cur_text font_light" name="bio" type="text" maxlength="250" oninput="TextArea(this);">{{ request.user.bio }}</textarea>
+                    <a class="error clear_this">
+                        <ul>
+                        </ul>
+                    </a>
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Location:" %}</label>
+                    <input class="input cur_text font_light" value="{{ request.user.location }}" type="text" maxlength="50" name="location">
+                    <a class="error clear_this">
+                        <ul>
+                        </ul>
+                    </a>
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Birth Date:" %}</label>
+                    <input class="input cur_pointer font_light" value="{{ request.user.birth_date|date:'Y-m-d'}}" type="date" name="birth_date">
+                    <a class="error clear_this">
+                        <ul>
+                        </ul>
+                    </a>
+                </div>
+                <div class="field">
+                    <div class="horizontal">
+                        <label class="label">{% trans "Gender:" %}</label>
+                        <div class="custom-select width_100 right font_16 cur_pointer">
+                            <select name="gender" class="right font_16 cur_pointer">
+                                {% if request.user.gender == "MALE" %}
+                                <option value="MALE" selected="{{ request.user.gender }}">{% trans "Male" %}</option>
+                                {% elif request.user.gender == "FEMALE" %}
+                                <option value="FEMALE" selected="{{ request.user.gender }}">{% trans "Female" %}</option>
+                                {% else %}
+                                <option value="NONE" selected="{{ request.user.gender }}">{% trans "None" %}</option>
+                                {% endif %}
+                                <option value="MALE">{% trans "Male" %}</option>
+                                <option value="FEMALE">{% trans "Female" %}</option>
+                                <option value="NONE">{% trans "None" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <a class="error clear_this">
+                        <ul>
+                        </ul>
+                    </a>
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Image:" %}</label>
+                    <input id="edit_post_form_image_input" class="input cur_pointer font_light" type="file" name="image" accept="image/*">
+                    <a class="error clear_this">{{ form.image.errors }}</a>
+                </div>
+            </div>
+            <div class="box_footer">
+                <button class="button cur_pointer" type="submit">{% trans "Save Profile" %}</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock content %}
+
+{% block scripts %}
+    {{ request.user.username|json_script:"json-userName" }}
+    {{ request.user.email|json_script:"json-userEmail" }}
+    {{ request.user.hash|json_script:"json-userHash" }}
+<script src="{% static 'scripts/main.js' %}"></script>
+{% endblock scripts %}

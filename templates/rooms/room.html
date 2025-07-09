@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}
+{% trans 'Direct Message' %}
+{% endblock title %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'styles/main.css' %}"/>
+{% endblock head %}
+
+{% block content %}
+<section>
+    {% include 'topbar.html' %}
+
+    <div class="main">
+        <div id="scroll_top" class="item cur_pointer" onclick="scrollToTop();">
+            <i class="item_icon fa fa-arrow-up font_light"></i>
+            <a class="item_text font_light">{% trans "Scroll to top" %}</a>
+        </div>
+        <div style="height: 80px;"></div>
+        
+        <div id="chat_messages" class="chat_messages smooth_scroll vertical width_max scroll_y animations_0" onscroll="checkScroll();">
+            <div class="message_user spacer_2">&nbsp;</div>
+            {% for message in messages %}
+                {% if message.sender == request.user %}
+            <div class="message_box_rigth right margin_right_20">
+                <div class="message_right">
+                    <a class="message_text font_light">{{ message.content }}</a>
+                </div>
+                <div><a>{{ message.sent_date_time|naturaltime }}</a></div>
+            </div>
+                {% else %}
+            <div class="message_user message_box">
+                <div class="user_field top cur_pointer" onclick="window.location='{% url 'profile' message.sender.id %}';">
+                    <img class="user_field_img radius_20" src="{{ message.sender.photo.url }}"></img>
+                </div>
+                <div class="message_field">
+                    <a class="message_field_text font_light cur_pointer" onclick="window.location='{% url 'profile' message.sender.id %}';">{{ message.sender.username }}</a>
+                    <div class="message">
+                        <a class="message_text font_light">{{ message.content }}</a>
+                    </div>
+                    <div><a>{{ message.sent_date_time|naturaltime }}</a></div>
+                </div>
+            </div>
+                {% endif %} 
+            {% endfor %}
+            <div id="chat_spacer" class="message_user spacer">&nbsp;</div>
+        </div>
+        <div id="scroll_bottom_chat" class="item cur_pointer" onclick="scrollToBottom();">
+            <i class="item_icon fa fa-arrow-down font_light"></i>
+            <a class="item_text font_light">{% trans "Scroll to bottom" %}</a>
+        </div>
+            <form id="send_form" class="sender bottom width_600 z_10" action="{% url 'send_message' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="roomToken" value="{{ roomToken }}">
+                <i class="fa fa-microphone sender_icon cur_pointer font_light fa-fade-hover"></i>
+                <input id="chat_message_input" class="sender_input cur_text font_light" name="content" type="text" placeholder="{% trans 'Type a message' %}">
+                <i class="fa fa-plus-square sender_icon cur_pointer font_light fa-beat-hover"></i>
+                <i id="chat_message_submit" onclick="send_message();" class="fa fa-paper-plane sender_icon cur_pointer font_light fa-shake-hover"></i>
+            </form>
+    </div>
+
+</section>
+
+<section id="friend_section" class="section z_15">
+    <div class="box center">
+        <div class="box_head">
+            <a class="box_head_title">{% trans 'Request Friend' %}</a>
+            <i class="fa fa-close box_head_cancel cur_pointer" onclick="close_section(friend_section);"></i>
+        </div>
+        <div class="box_body">
+            <div class="field">
+                <label class="label">{% trans "Username:" %}</label>
+                <input id="friend_request_form_input" class="input clear_this cur_text font_light" type="text" name="username" placeholder="{% trans 'Example' %}">
+                <a id="friend_request_form_error" class="error clear_this"></a>
+            </div>
+        </div>
+        <div class="box_footer">
+            <button class="button cur_pointer" onclick="friend_request();">
+                {% trans "Send Request" %}
+                <div>&nbsp;</div>
+                <div>&nbsp;</div>
+                <div id="friend_section_loader" class="loader"></div>
+            </button>
+        </div>
+    </div>
+</section>
+
+<section id="image_section" class="section z_15" onclick="close_section(image_section);">
+    <div class="image_section box center">
+        <div class="box_body">
+            <div class="field">
+                <img id="image_section_image"/>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
+{% block scripts %}
+{% include 'scripts.html' %}
+{{ roomToken|json_script:"json-roomToken" }}
+<script src="{% static 'scripts/rooms.js' %}"></script>
+{% endblock scripts %}

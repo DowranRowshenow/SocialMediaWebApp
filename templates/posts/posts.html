@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}
+{% trans 'Posts' %}
+{% endblock title %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'styles/main.css' %}"/>
+{% endblock head %}
+
+{% block content %}
+<section>
+    <form id="delete_post_form" method="post">{% csrf_token %}</form>
+    
+    {% include 'topbar.html' %}
+
+    <div class="main">
+        <div id="scroll_top" class="item cur_pointer" onclick="scrollToTop();">
+            <i class="item_icon fa fa-arrow-up font_light"></i>
+            <a class="item_text font_light">{% trans "Scroll to top" %}</a>
+        </div>
+        <div id="chat_messages" class="modern-chat-messages posts width_max animations_0" onscroll="checkScroll();">
+            <div style="height:80px;">
+            </div>
+            {% for post in posts %}
+            <div class="post modern-post-card">
+                {% if post.user == request.user %}
+                <div class="box_head dark_blue">
+                    <div class="field horizontal cur_pointer" onclick="window.location='{% url 'user_profile' %}';">
+                {% else %}
+                <div class="box_head">
+                    <div class="field horizontal cur_pointer" onclick="window.location='{% url 'profile' post.user.id %}';">
+                {% endif %}
+                        <img class="post_user_image" src="{{ post.user.photo.url }}"/>
+                        <div class="vertical">
+                            <a class="box_head_title">{{ post.user.username }}</a>
+                            <div class="paragraph font_light">{{ post.user.email }}</div>
+                        </div>
+                    </div>
+                    {% if post.user == request.user %}
+                        {% if post.image %}
+                    <div class="field horizontal right cur_pointer font_light" onclick="delete_post_form.action='{% url 'delete_post' post.pk %}';edit_post_form.action='{% url 'edit_post' post.pk %}';open_section(edit_post_section, '{{ post.image.url }}', '{{ post.content }}', post_image_{{ post.id }});" onmouseover="post_icon_{{ post.id }}.classList.add('fa-bounce');" onmouseout="post_icon_{{ post.id }}.classList.remove('fa-bounce');">
+                        {% else %}
+                    <div class="field horizontal right cur_pointer font_light" onclick="delete_post_form.action='{% url 'delete_post' post.pk %}';edit_post_form.action='{% url 'edit_post' post.pk %}';open_section(edit_post_section, null, '{{ post.content }}');" onmouseover="post_icon_{{ post.id }}.classList.add('fa-bounce');" onmouseout="post_icon_{{ post.id }}.classList.remove('fa-bounce');">
+                        {% endif %}
+                        <label class="label post_item">{% trans "Edit Post" %}</label>
+                        <i id="post_icon_{{ post.id }}" class="fa fa-pencil"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="box_body">
+                    {% if post.image %}
+                    <img id="post_image_{{ post.id }}" class="post_image cur_pointer" src="{{ post.image.url }}" onclick="window.location='{% url 'post_detail' post.pk %}';"/>
+                    {% endif %}
+                    {% if post.content %}
+                    <div class="margin_left_20 left">
+                        <pre class="post_content paragraph font_16">{{ post.content }}</pre>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="box_footer">
+                    <div class="relative horizontal">
+                        <div class="field absolute_left">
+                            <label class="post_date_time label">{{ post.created_date_time|naturaltime }}</label>
+                        </div>
+                        <div class="field horizontal font_light center fa-bounce-hover cur_pointer" onclick="window.location='{% url 'post_detail' post.pk %}';">
+                            {% if post.comments.all.count %}
+                            <label class="label">{{ post.comments.all.count }}</label>
+                            {% else %}
+                            <label class="label">0</label>
+                            {% endif %}
+                            <i class="fa fa-message font_light post_item font_blue"></i>
+                        </div>
+                        <div class="field horizontal absolute_right">
+                            <i class="fa fa-thumbs-up font_light fa-shake-hover post_item cur_pointer font_green" onclick="window.location='{% url 'like_post' post.id %}';"></i>
+                            {% if post.liked_users.all.count %}
+                            <label class="label">{{ post.liked_users.all.count }}</label>
+                            {% else %}
+                            <label class="label">0</label>
+                            {% endif %}
+                            <i class="fa fa-thumbs-down font_light fa-shake-hover post_item cur_pointer font_red" onclick="window.location='{% url 'dislike_post' post.id %}';"></i>
+                            {% if post.disliked_users.all.count %}
+                            <label class="label">{{ post.disliked_users.all.count }}</label>
+                            {% else %}
+                            <label class="label">0</label>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="selection">&nbsp;</div>
+            <div class="selection">&nbsp;</div>
+            <div id="add_post" class="button cur_pointer" style="position: absolute; bottom: 20px; right: 20px; z-index: 1000;" onclick="open_section(post_section);">
+                <i class="item_icon fa fa-plus-square font_light"></i>
+                <a class="item_text font_light">{% trans "Share Post" %}</a>
+            </div>
+        </div>
+        <div id="scroll_bottom" class="item cur_pointer" onclick="scrollToBottom();">
+            <i class="item_icon fa fa-arrow-down font_light"></i>
+            <a class="item_text font_light">{% trans "Scroll to bottom" %}</a>
+        </div>
+    </div>
+
+</section>
+
+<section id="post_section" class="section z_15">
+    <div class="box center width_500 modern_post_card">
+        <form method="post" action="{% url 'create_post' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="box_head">
+                <a class="box_head_title">{% trans 'Create Post' %}</a>
+                <i class="fa fa-close box_head_cancel cur_pointer" onclick="close_section(post_section);"></i>
+            </div>
+            <div class="box_body">
+                <div class="field">
+                    <label class="label">{% trans "Description:" %}</label>
+                    <textarea id="post_form_content_input" maxlength="249" class="input enter clear_this resize_none cur_text font_light" type="text" name="content" placeholder="{% trans 'Type something...' %}" oninput="TextArea(this);"></textarea>
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Image:" %}</label>
+                    <input id="post_form_image_input" class="input clear_this cur_pointer font_light" type="file" name="image" accept="image/*">
+                </div>
+            </div>
+            <div class="box_footer">
+                <button type="submit" class="button cur_pointer">{% trans "Share Post" %}</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section id="edit_post_section" class="section z_15">
+    <div class="box center width_500">
+        <form id="edit_post_form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="box_head">
+                <a class="box_head_title">{% trans 'Edit Post' %}&nbsp;</a>
+                <i class="fa fa-close box_head_cancel cur_pointer" onclick="close_section(edit_post_section);"></i>
+            </div>
+            <div class="box_body">
+                <div class="field">
+                    <label class="label">{% trans "Description:" %}</label>
+                    <textarea id="edit_post_form_content_input" maxlength="249" class="input enter clear_this resize_none cur_text font_light" type="text" name="content" placeholder="{% trans 'Type something...' %}" oninput="TextArea(this);"></textarea>
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Image:" %}</label>
+                    <input id="edit_post_form_image_input" class="input clear_this cur_pointer font_light" type="file" name="image" accept="image/*">
+                </div>
+                <!--
+                <div class="field horizontal align_vertical_center">
+                    <label class="label margin_right_20">{% trans "Do not use image:" %}</label>
+                    <input id="edit_post_form_checkbox" class="input cur_pointer font_light" name="delete_image" type="checkbox">
+                </div>
+                -->
+            </div>
+            <div class="box_footer horizontal">
+                <div onclick="delete_post_form.submit();" class="button cur_pointer width_200 red">
+                    <!--<i class="fa fa-trash">&nbsp;</i>-->
+                    {% trans "Delete Post" %}
+                </div>
+                <div class="center">&nbsp;</div>
+                <button onclick="" type="submit" class="button width_200 cur_pointer">
+                    <!--<i class="fa fa-save">&nbsp;</i>-->
+                    {% trans "Save Post" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+<section id="friend_section" class="section z_10">
+    <div class="box center">
+        <form id="request_friend_form" action="{% url 'friend_request' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="box_head">
+                <a class="box_head_title">{% trans 'Request Friend' %}</a>
+                <i class="fa fa-close box_head_cancel cur_pointer" onclick="close_section(friend_section);"></i>
+            </div>
+            <div class="box_body">
+                <div class="field">
+                    <label class="label">{% trans "Username:" %}</label>
+                    <input id="friend_request_form_input" name="email" class="input clear_this cur_text font_light" type="text" name="username" placeholder="{% trans 'Example' %}">
+                    <a id="friend_request_form_error" class="error clear_this"></a>
+                </div>
+            </div>
+            <div class="box_footer">
+                <!--
+                <button class="button cur_pointer" onclick="friend_request();">
+                -->
+                    <button class="button cur_pointer" type="submit">
+                        {% trans "Send Request" %}
+                        <div>&nbsp;</div>
+                        <div>&nbsp;</div>
+                        <div id="friend_section_loader" class="loader"></div>
+                    </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section id="image_section" class="section z_15" onclick="close_section(image_section);">
+    <div class="image_section box center">
+        <div class="box_body">
+            <div class="field">
+                <img id="image_section_image"/>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
+{% block scripts %}
+{% include 'scripts.html' %}
+{% endblock scripts %}

@@ -1,0 +1,14 @@
+{% load static %}
+{% load i18n %}
+
+<a style="display:none;" id="trans_friend_request_error">{% trans "Please enter a valid username" %}</a>
+<a style="display:none;" id="trans_friend_requests">{% trans "FRIEND REQUESTS" %}</a>
+<a style="display:none;" id="trans_sent_friend_requests">{% trans "SENT FRIEND REQUESTS" %}</a>
+<a style="display:none;" id="trans_profile">{% trans "Profile" %}</a>
+<a style="display:none;" id="trans_accept">{% trans "Accept" %}</a>
+<a style="display:none;" id="trans_decline">{% trans "Decline" %}</a>
+    {{ request.user.username|json_script:"json-userName" }}
+    {{ request.user.email|json_script:"json-userEmail" }}
+    {{ request.user.hash|json_script:"json-userHash" }}
+<script src="{% static 'scripts/main.js' %}"></script>
+<script src="{% static 'scripts/friends.js' %}"></script>

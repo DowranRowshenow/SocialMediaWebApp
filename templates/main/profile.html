@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}
+{% trans 'Posts' %}
+{% endblock title %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'styles/main.css' %}"/>
+{% endblock head %}
+
+{% block content %}
+<section>
+    {% include 'topbar.html' %}
+
+    <form id="request_friend_form" method="post" action="{% url 'friend_request' %}">
+        {% csrf_token %}
+        <input id="friend_form_input" type="hidden" value="{{ user.email }}" name="email">
+    </form>
+
+    <div class="main">
+        <div id="scroll_top" class="item cur_pointer" onclick="scrollToTop();">
+            <i class="item_icon fa fa-arrow-up font_light"></i>
+            <a class="item_text font_light">{% trans "Scroll to top" %}</a>
+        </div>
+        <div id="chat_messages" class="chat_messages posts vertical width_max scroll_y animations_0" onscroll="checkScroll();">
+            <div class="profile_box modern-post-card" style="margin_top_10;">
+                <div class="field">
+                    <img id="profile_image" class="profile_box_image cur_pointer" src="{{ user.image.url }}" onclick="open_section(image_section, this.src);">
+                </div>
+                {% if user == request.user %}
+                <div class="field edit_profile horizontal cur_pointer right margin_top_10 margin_right_20 font_light" onclick="open_section(edit_profile_section);" onmouseover="profile_edit.classList.add('fa-bounce');" onmouseout="profile_edit.classList.remove('fa-bounce');">
+                    <i id="profile_edit" class="fa fa-pencil post_item"></i>
+                
+                    <label class="label">{% trans "Edit Profile" %}</label>
+                </div>
+                {% endif %}
+                <div class="field horizontal">
+                    <a class="label profile_label">{{ user.username }}</a>
+                </div>
+                <div class="field horizontal">
+                    <a class="label">{{ user.email }}</a>
+                </div>
+                <div class="horizontal width_max">
+                    <div class="field right">
+                        {% if user.first_name or user.last_name %}
+                        <div class="field horizontal font_light">
+                            <a class="label">{% trans "Full Name:" %}</a>
+                            <a class="label margin_left_10">{{ user.first_name }}  {{ user.last_name }}</a>
+                        </div>
+                        {% endif %}
+                        {% if user.bio %}
+                        <div class="field horizontal font_light">
+                            <a class="label">{% trans "Bio:" %}</a>
+                            <a class="label margin_left_10">{{ user.bio }}</a>
+                        </div>
+                        {% endif %}
+                        {% if user.gender != "NONE" %}
+                        <div class="field horizontal font_light">
+                            <a class="label">{% trans "Gender:" %}</a>
+                            <a class="label margin_left_10">{{ user.gender }}</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if user.firs_name or user.last_name or user.bio %}
+                    <div class="spacer_3">&nbsp;</div>
+                    {% endif %}
+                    <div class="field left">
+                        {% if user.location %}
+                        <div class="field horizontal font_light">
+                            <a class="label">{% trans "Location:" %}</a>
+                            <a class="label margin_left_10">{{ user.location }}</a>
+                        </div>
+                        {% endif %}
+                        {% if user.birth_date %}
+                        <div class="field horizontal font_light">
+                            <a class="label">{% trans "Birth Date:" %}</a>
+                            <a class="label margin_left_10">{{ user.birth_date }}</a>
+                        </div>
+                        {% endif %}
+                        {% if user in friends %}
+                        <div class="field horizontal">
+                            <a class="label">{% trans "Last Seen:" %}</a>
+                            <a class="label margin_left_10">{{ user.last_login|naturaltime }}</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>     
+                {% if user == request.user %}
+                <div class="field horizontal">
+                    <button class="button red cur_pointer" onclick="window.location='{% url 'logout' %}';">{% trans "Logout" %}</button>
+                </div>
+                {% else %}
+                <div class="field horizontal">
+                    {% if not user in friends %}
+                        {% for requested_friend in requested_friends %}
+                            {% if user == requested_friend.receiver %}
+                    <div id="friend_profile"></div>
+                    <button id="friend_profile_request_cancel" class="button red cur_pointer" onclick="window.location='{% url 'friend_request_cancel' user.id %}';">{% trans "Cancel friend request" %}</button>
+                            {% endif %}
+                        {% endfor %}
+                        {% for friend_request in friend_requests %}
+                            {% if user == friend_request.sender %}
+                    <div id="friend_profile"></div>
+                    <button class="button red cur_pointer" onclick="window.location='{% url 'friend_request_decline' user.id %}';">{% trans "Decline friend request" %}</button>
+                    <div class="spacer_3"></div>
+                    <button class="button cur_pointer" onclick="window.location='{% url 'friend_request_accept' user.id %}';">{% trans "Accept friend request" %}</button>
+                            {% endif %}
+                        {% endfor %}
+                    <button id="friend_profile_send_request" style="display: none;" class="button cur_pointer" onclick="request_friend_form.submit();">{% trans "Send friend request" %}</button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            <!--
+            <div class="post_box">       
+                {% for post in item_list %}
+                <div class="post box center">
+                    {% if post.user == user %}
+                    <div class="box_head dark_blue">
+                    {% else %}
+                    <div class="box_head">
+                    {% endif %}
+                        <div class="field horizontal">
+                            <img class="post_user_image" src="{{ post.user.photo.url }}"/>
+                            <a class="box_head_title">{{ post.user.username }}</a>
+                        </div>
+                        {% if post.user == user %}
+                            {% if post.image %}
+                        <div class="field horizontal right cur_pointer font_light" onclick="delete_post_form.action='{% url 'delete_post' post.pk %}';edit_post_form.action='{% url 'edit_post' post.pk %}';open_section(edit_post_section, '{{ post.image.url }}', '{{ post.content }}', post_image_{{ post.id }});" onmouseover="post_icon_{{ post.id }}.classList.add('fa-bounce');" onmouseout="post_icon_{{ post.id }}.classList.remove('fa-bounce');">
+                            {% else %}
+                        <div class="field horizontal right cur_pointer font_light" onclick="delete_post_form.action='{% url 'delete_post' post.pk %}';edit_post_form.action='{% url 'edit_post' post.pk %}';open_section(edit_post_section, null, '{{ post.content }}');" onmouseover="post_icon_{{ post.id }}.classList.add('fa-bounce');" onmouseout="post_icon_{{ post.id }}.classList.remove('fa-bounce');">
+                            {% endif %}
+                            <label class="label post_item">{% trans "Edit Post" %}</label>
+                            <i id="post_icon_{{ post.id }}" class="fa fa-pencil"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="box_body">
+                        {% if post.image %}
+                        <div class="field">
+                            <img id="post_image_{{ post.id }}" class="post_image cur_pointer" src="{{ post.image.url }}" onclick="open_section(image_section, this.src);"/>
+                        </div>
+                        {% endif %}
+                        {% if post.content %}
+                        <div class="field left">
+                            <pre class="post_content paragraph font_16">{{ post.content }}</pre>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="box_footer">
+                        <div class="relative horizontal">
+                            <div class="field absolute_left">
+                                <label class="post_date_time label">{{ post.created_date_time|naturaltime }}</label>
+                            </div>
+                            <div class="field horizontal font_light center fa-bounce-hover cur_pointer" onclick="post_detail_form_input.value='{{ post.hash }}';post_detail_form.submit();">
+                                {% if post.comments.all.count %}
+                                <label class="label">{{ post.comments.all.count }}</label>
+                                {% else %}
+                                <label class="label">0</label>
+                                {% endif %}
+                                <i class="fa fa-message font_light post_item font_blue"></i>
+                            </div>
+                            <div class="field horizontal absolute_right">
+                                <i class="fa fa-thumbs-up font_light fa-shake-hover post_item cur_pointer font_green"></i>
+                                <label class="label">0</label>
+                                <i class="fa fa-thumbs-down font_light fa-shake-hover post_item cur_pointer font_red"></i>
+                                <label class="label">0</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            -->
+        </div>
+        <div id="scroll_bottom" class="item cur_pointer" onclick="scrollToBottom();">
+            <i class="item_icon fa fa-arrow-down font_light"></i>
+            <a class="item_text font_light">{% trans "Scroll to bottom" %}</a>
+        </div>
+        <div class="shadow_bottom">
+        </div>
+    </div>
+
+</section>
+
+<section id="edit_profile_section" class="section z_10">
+    <div class="box center width_500">
+        <form id="edit_profile_form" method="post" enctype="multipart/form-data" action="{% url 'edit_profile' request.user.pk %}">
+            {% csrf_token %}
+            <div class="box_head">
+                <a class="box_head_title">{% trans 'Edit Profile' %}</a>
+                <i class="fa fa-close box_head_cancel cur_pointer" onclick="close_section(edit_profile_section);"></i>
+            </div>
+            <div class="box_body">
+                <div class="field">
+                    <label class="label">{% trans "First Name:" %}</label>
+                    <input class="input cur_pointer font_light" value="{{ request.user.first_name }}" type="text" maxlength="150" name="first_name">
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Last Name:" %}</label>
+                    <input class="input cur_pointer font_light" value="{{ request.user.last_name }}" type="text" maxlength="150" name="last_name">
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Biography:" %}</label>
+                    <textarea class="input resize_none cur_text font_light" name="bio" type="text" maxlength="250" oninput="TextArea(this);">{{ request.user.bio }}</textarea>
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Location:" %}</label>
+                    <input class="input cur_pointer font_light" value="{{ request.user.location }}" type="text" maxlength="50" name="location">
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Birth Date:" %}</label>
+                    <input class="input cur_pointer font_light" value="{{ request.user.birth_date|date:'Y-m-d'}}" type="date" name="birth_date">
+                </div>
+                <div class="field">
+                    <div class="horizontal">
+                        <label class="label">{% trans "Gender:" %}</label>
+                        <div class="custom-select width_100 right font_16 cur_pointer">
+                            <select name="gender" class="right font_16 cur_pointer">
+                                {% if request.user.gender == "MALE" %}
+                                <option value="MALE" selected="{{ request.user.gender }}">{% trans "Male" %}</option>
+                                {% elif request.user.gender == "FEMALE" %}
+                                <option value="FEMALE" selected="{{ request.user.gender }}">{% trans "Female" %}</option>
+                                {% else %}
+                                <option value="NONE" selected="{{ request.user.gender }}">{% trans "None" %}</option>
+                                {% endif %}
+                                <option value="MALE">{% trans "Male" %}</option>
+                                <option value="FEMALE">{% trans "Female" %}</option>
+                                <option value="NONE">{% trans "None" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Image:" %}</label>
+                    <input id="edit_post_form_image_input" class="input cur_pointer font_light" type="file" name="image" accept="image/*">
+                </div>
+            </div>
+            <div class="box_footer">
+                <button class="button cur_pointer" type="submit">{% trans "Save Profile" %}</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section id="friend_section" class="section z_15">
+    <div class="box center">
+        <div class="box_head">
+            <a class="box_head_title">{% trans 'Request Friend' %}</a>
+            <i class="fa fa-close box_head_cancel cur_pointer" onclick="close_section(friend_section);"></i>
+        </div>
+        <div class="box_body">
+            <div class="field">
+                <label class="label">{% trans "Username:" %}</label>
+                <input id="friend_request_form_input" class="input clear_this cur_text font_light" type="text" name="username" placeholder="{% trans 'Example' %}">
+                <a id="friend_request_form_error" class="error clear_this"></a>
+            </div>
+        </div>
+        <div class="box_footer">
+            <button class="button cur_pointer" onclick="friend_request();">
+                {% trans "Send Request" %}
+                <div>&nbsp;</div>
+                <div>&nbsp;</div>
+                <div id="friend_section_loader" class="loader"></div>
+            </button>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
+
+{% block scripts %}
+{% include 'scripts.html' %}
+{% endblock scripts %}

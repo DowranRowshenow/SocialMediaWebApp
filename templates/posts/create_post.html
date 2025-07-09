@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}{% trans 'Create Post' %}{% endblock title %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'styles/main.css' %}"/>
+{% endblock head %}
+
+{% block content %}
+<section id="post_section">
+    <div class="box center width_500">
+        <form method="post" action="{% url 'create_post' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="box_head">
+                <a class="box_head_title">{% trans 'Create Post' %}</a>
+                <i class="fa fa-close box_head_cancel cur_pointer" onclick="window.location='{% url 'posts' %}?pg=posts';"></i>
+            </div>
+            <div class="box_body">
+                <div class="field">
+                    <label class="label">{% trans "Description:" %}</label>
+                    <textarea id="post_form_content_input" maxlength="249" class="input enter clear_this resize_none cur_text font_light" type="text" name="content" placeholder="{% trans 'Type something...' %}" oninput="TextArea(this);"></textarea>
+                    <a class="error clear_this">{{ form.content.errors }}</a>
+                </div>
+                <div class="field">
+                    <label class="label">{% trans "Image:" %}</label>
+                    <input id="post_form_image_input" class="input clear_this cur_pointer font_light" type="file" name="image" accept="image/*">
+                    <a class="error clear_this">{{ form.image.errors }}</a>
+                </div>
+            </div>
+            <div class="box_footer">
+                <button type="submit" class="button cur_pointer">{% trans "Share Post" %}</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock content %}
+
+{% block scripts %}
+    {{ request.user.username|json_script:"json-userName" }}
+    {{ request.user.email|json_script:"json-userEmail" }}
+    {{ request.user.hash|json_script:"json-userHash" }}
+<script src="{% static 'scripts/main.js' %}"></script>
+{% endblock scripts %}
