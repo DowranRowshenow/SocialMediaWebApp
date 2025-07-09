@@ -69,6 +69,7 @@
         </div>
     </div>
     {% endif %}
+        {% if friends %}
         <div class="grouper font_light width_max" onclick="grouper(friends_group, friends_icon);">
             <i id="friends_icon" class="fa fa-angle-down font_light"></i>
             <a class="grouper_text font_light">{% trans "FRIENDS" %}</a>
@@ -95,6 +96,7 @@
             </div>
             {% endfor %}
         </div>
+        {% endif %}
         <div class="item width_auto cur_pointer" onclick="open_section(friend_section);" onmouseover="plus_icon.classList.add('fa-beat');" onmouseout="plus_icon.classList.remove('fa-beat');">
             <i id="plus_icon" class="item_icon fa fa-plus-square font_light"></i>
             <a class="item_text font_light">{% trans "Add Friends" %}</a>
