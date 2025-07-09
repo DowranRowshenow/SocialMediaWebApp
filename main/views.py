@@ -1,9 +1,18 @@
 from django.views.generic import TemplateView, DetailView, View
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect, redirect
 from django.urls import reverse
 
 from accounts.models import User
 from friends.models import FriendList, FriendRequest
+
+
+def redirect_unknown_url(request, path=None):
+    """
+    Redirects any unknown URL to the homepage.
+    """
+    return redirect(reverse('posts')) # Replace 'home_page_name' with the actual name of your homepage URL pattern
+    # Or, to redirect to a specific static URL:
+    # return redirect('/') 
 
 
 def context(self, context):

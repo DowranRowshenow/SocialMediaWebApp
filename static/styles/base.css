@@ -151,11 +151,16 @@ section {
     transition: var(--animations_01);
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-size: 16px;
-    color: var(--aco_1);
+    color: var(--aco_0);
 }
 
 .label_2:hover {
     color: var(--aco_0);
+}
+
+.scroll_y {
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .field {
@@ -178,7 +183,7 @@ section {
 .link,
 .link_2 {
     font-size: 20px;
-    color: rgba(121, 162, 205, 0.5);
+    color: rgba(121, 162, 205, 0.7);
     transition: var(--animations_01);
 }
 
@@ -192,7 +197,7 @@ section {
 }
 
 .purp {
-    color: rgba(112, 75, 94, 0.5);
+    color: rgba(112, 75, 94);
     transition: var(--animations_01);
 }
 

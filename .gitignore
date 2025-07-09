@@ -2,7 +2,8 @@
 .venv/
 .tools/
 *.sqlite3
-old.requirements.txt
+uploads/
+settings2.py
 
 # 3rd Party files
 *.mo
@@ -63,7 +64,7 @@ db.sqlite3
 db.sqlite3-journal
 
 # Media files (user uploads)
-media/
+#media/
 
 # Static files (collected)
 staticfiles/

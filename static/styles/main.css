@@ -188,9 +188,9 @@
 }
 
 .chat_messages {
+    overflow-y: auto;
     scroll-behavior: smooth;
-    overflow-y: auto !important;
-    width: 900px;
+    width: var(--post-width);
 }
 
 .chat_messages::-webkit-scrollbar {
@@ -227,10 +227,6 @@
     position: absolute;
     bottom: 30px;
     box-shadow: var(--shadow_05);
-}
-
-.posts {
-    align-items: center;
 }
 
 .post {
@@ -294,6 +290,8 @@
 
 .image_section {
     max-width: 100%;
+    justify-self: center;
+    justify-content: center;
     align-items: center;
     height: max-content;
     width: max-content;
@@ -373,6 +371,7 @@
 
 /* DARK UI */
 .side_bar {
+    max-height: 70%;
     top: calc(var(--topbar_height) + 5px);
     right: calc(-40px - var(--side_width));
     position: fixed;

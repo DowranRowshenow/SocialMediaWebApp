@@ -64,7 +64,7 @@
                         </div>
                         {% endif %}
                     </div>
-                    {% if user.firs_name or user.last_name or user.bio %}
+                    {% if user.first_name or user.last_name or user.bio or user.gender %}
                     <div class="spacer_3">&nbsp;</div>
                     {% endif %}
                     <div class="field left">
@@ -243,30 +243,6 @@
                 <button class="button cur_pointer" type="submit">{% trans "Save Profile" %}</button>
             </div>
         </form>
-    </div>
-</section>
-
-<section id="friend_section" class="section z_15">
-    <div class="box center">
-        <div class="box_head">
-            <a class="box_head_title">{% trans 'Request Friend' %}</a>
-            <i class="fa fa-close box_head_cancel cur_pointer" onclick="close_section(friend_section);"></i>
-        </div>
-        <div class="box_body">
-            <div class="field">
-                <label class="label">{% trans "Username:" %}</label>
-                <input id="friend_request_form_input" class="input clear_this cur_text font_light" type="text" name="username" placeholder="{% trans 'Example' %}">
-                <a id="friend_request_form_error" class="error clear_this"></a>
-            </div>
-        </div>
-        <div class="box_footer">
-            <button class="button cur_pointer" onclick="friend_request();">
-                {% trans "Send Request" %}
-                <div>&nbsp;</div>
-                <div>&nbsp;</div>
-                <div id="friend_section_loader" class="loader"></div>
-            </button>
-        </div>
     </div>
 </section>
 

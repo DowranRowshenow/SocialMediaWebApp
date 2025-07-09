@@ -149,6 +149,10 @@ input::-webkit-inner-spin-button {
     outline: none;
 }
 
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
 ::selection {
     background-color: var(--aco_2);
     color: var(--whiter);

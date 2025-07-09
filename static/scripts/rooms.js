@@ -76,25 +76,27 @@ function send_message() {
 /* FUNCTIONS */
 function send_message() {
     var content = document.getElementById("chat_message_input").value;
-    content = content.replace("<", "&lt;");
-    content = content.replace(">", "&gt;");
-    /*
-    fetch(`/send_message/${roomToken}/`, {
-        method: 'POST',
-        body: JSON.stringify({
+    if (content) {
+        content = content.replace("<", "&lt;");
+        content = content.replace(">", "&gt;");
+        /*
+        postSocket.send(JSON.stringify({
+            'type': 'comment_post',
             'content': content,
-        }),
-    });
-    */
-    document.getElementById("chat_message_input").value = '';
-    return false;
+        }));
+        */
+        document.getElementById('send_form').submit();
+        document.getElementById("chat_message_input").value = '';
+    }
+    else {
+        alert('You can not send empty message!');
+    }
 }
 var input = document.getElementById("chat_message_input");
 input.addEventListener("keypress", function (event) {
     if (event.key === "Enter") {
         event.preventDefault();
-        //send_message();
-        document.getElementById('send_form').submit();
+        send_message();
     }
 });
 function scrollToBottom() {

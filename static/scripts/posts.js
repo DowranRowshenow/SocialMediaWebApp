@@ -86,7 +86,7 @@ function dislike_post()
 }
 */
 /* FUNCTIONS */
-function send_comment() {
+function send_message() {
     var content = document.getElementById("chat_message_input").value;
     if (content) {
         content = content.replace("<", "&lt;");
@@ -97,19 +97,18 @@ function send_comment() {
             'content': content,
         }));
         */
-
+        document.getElementById('send_form').submit();
         document.getElementById("chat_message_input").value = '';
     }
     else {
-        alert('You can not send empty comment!');
+        alert('You can not send empty message!');
     }
 }
 var input = document.getElementById("chat_message_input");
 input.addEventListener("keypress", function (event) {
     if (event.key === "Enter") {
         event.preventDefault();
-        //send_comment();
-        document.getElementById('send_form').submit();
+        send_message();
     }
 });
 function scrollToBottom() {

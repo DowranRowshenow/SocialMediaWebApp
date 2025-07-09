@@ -39,45 +39,14 @@
         <i id="users_icon_2" class="notification_bar_icon fa fa-users font_light"></i>
         <a class="notification_bar_text font_light">{% trans "Friends" %}</a>
     </div>
-    <div class="width_max vertical cur_pointer">
-        <div class="grouper font_light width_max" onclick="grouper(friends_group, friends_icon);">
-            <i id="friends_icon" class="fa fa-angle-down font_light"></i>
-            <a class="grouper_text font_light">{% trans "FRIENDS" %}</a>
-        </div>
-        <div id="friends_group" class="group width_max">
-            {% for friend in friends %}
-            <div class="item_2 cur_pointer dropdown">
-                <div class="item_2_body" onclick="window.location='{% url 'dm' friend.hash %}';">
-                    <img src="{{ friend.photo.url }}" class="item_img"></img>
-                    <a class="item_text font_light">{{ friend.username }}</a>
-                    {% if friend.is_online %}
-                    <i class="fa fa-circle font_green font_8"></i>
-                    {% else %}
-                    <i class="fa fa-circle font_red font_8"></i>
-                    {% endif %}
-                </div>
-                <i class="profile_bar_i item_2_button fa fa-ellipsis-vertical cur_pointer dropbtn font_light" onclick="on_dropdown_click(dropdown_friend_{{ friend.id }});"></i>
-                <div id="dropdown_friend_{{ friend.id }}" class="dropdown-content">
-                    <div class="drop_item horizontal" onclick="window.location='{% url 'profile' friend.id %}';" onmouseover="friend_profile_icon_{{ friend.id }}.classList.add('fa-flip');" onmouseout="friend_profile_icon_{{ friend.id }}.classList.remove('fa-flip');">
-                        <i id="friend_profile_icon_{{ friend.id }}" class="drop_item_icon fa fa-address-card font_light"></i>
-                        <a class="drop_item_text font_light">{% trans "Profile" %}</a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-            <div class="item width_auto cur_pointer" onclick="open_section(friend_section);" onmouseover="plus_icon.classList.add('fa-beat');" onmouseout="plus_icon.classList.remove('fa-beat');">
-                <i id="plus_icon" class="item_icon fa fa-plus-square font_light"></i>
-                <a class="item_text font_light">{% trans "Add Friends" %}</a>
-            </div>
-        </div>
-    </div>
+    <div class="width_max vertical cur_pointer scroll_y">
     {% if requested_friends %}
-    <div class="width_max vertical cur_pointer">
+    <div class="width_max vertical cur_pointer scroll_y">
         <div class="grouper width_auto font_light" onclick="grouper(requested_friends_group, requested_friends_icon);">
             <i id="requested_friends_icon" class="fa fa-angle-down font_light"></i>
             <a class="grouper_text font_light">{% trans "SENT FRIEND REQUESTS" %}</a>
         </div>
-        <div id="requested_friends_group" class="group">
+        <div id="requested_friends_group" class="group scroll_y">
             {% for requested_friend in requested_friends %}
             <div class="item_2 cur_pointer dropdown">
                 <div class="item_2_body">
@@ -100,9 +69,40 @@
         </div>
     </div>
     {% endif %}
+        <div class="grouper font_light width_max" onclick="grouper(friends_group, friends_icon);">
+            <i id="friends_icon" class="fa fa-angle-down font_light"></i>
+            <a class="grouper_text font_light">{% trans "FRIENDS" %}</a>
+        </div>
+        <div id="friends_group" class="group width_max scroll_y">
+            {% for friend in friends %}
+            <div class="item_2 cur_pointer dropdown">
+                <div class="item_2_body" onclick="window.location='{% url 'dm' friend.hash %}';">
+                    <img src="{{ friend.photo.url }}" class="item_img"></img>
+                    <a class="item_text font_light">{{ friend.username }}</a>
+                    {% if friend.is_online %}
+                    <i class="fa fa-circle font_green font_8"></i>
+                    {% else %}
+                    <i class="fa fa-circle font_red font_8"></i>
+                    {% endif %}
+                </div>
+                <i class="profile_bar_i item_2_button fa fa-ellipsis-vertical cur_pointer dropbtn font_light" onclick="on_dropdown_click(dropdown_friend_{{ friend.id }});"></i>
+                <div id="dropdown_friend_{{ friend.id }}" class="dropdown-content">
+                    <div class="drop_item horizontal" onclick="window.location='{% url 'profile' friend.id %}';" onmouseover="friend_profile_icon_{{ friend.id }}.classList.add('fa-flip');" onmouseout="friend_profile_icon_{{ friend.id }}.classList.remove('fa-flip');">
+                        <i id="friend_profile_icon_{{ friend.id }}" class="drop_item_icon fa fa-address-card font_light"></i>
+                        <a class="drop_item_text font_light">{% trans "Profile" %}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="item width_auto cur_pointer" onclick="open_section(friend_section);" onmouseover="plus_icon.classList.add('fa-beat');" onmouseout="plus_icon.classList.remove('fa-beat');">
+            <i id="plus_icon" class="item_icon fa fa-plus-square font_light"></i>
+            <a class="item_text font_light">{% trans "Add Friends" %}</a>
+        </div>
+    </div>
 </div>
 
-<div id="notifications_bar" class="side_bar modern-post-card">
+<div id="notifications_bar" class="side_bar modern-post-card scroll_y">
     <div class="notification_bar font_light" onmouseover="bell_icon_2.classList.add('fa-shake');" onmouseout="bell_icon_2.classList.remove('fa-shake');">
         <i id="bell_icon_2" class="notification_bar_icon fa fa-bell font_light"></i>
         <a class="notification_bar_text font_light">{% trans "Notifications" %}</a>
@@ -115,12 +115,12 @@
         </div>
     </div>
     {% if friend_requests %}
-    <div class="width_max vertical cur_pointer">
+    <div class="width_max vertical cur_pointer scroll_y">
         <div class="grouper width_auto font_light" onclick="grouper(friend_requests_group, friend_requests_grouper_icon);">
             <i id="friend_requests_grouper_icon" class="fa fa-angle-down font_light"></i>
             <a class="grouper_text font_light">{% trans "FRIEND REQUESTS" %}</a>
         </div>
-        <div id="friend_requests_group">
+        <div id="friend_requests_group" class="scroll_y">
             {% for friend_request in friend_requests %}
             <div class="item_2 cur_pointer dropdown" onclick="on_dropdown_click(dropdown_request_{{ friend_request.id }});">
                 <div class="item_2_body dropbtn">
@@ -154,7 +154,7 @@
         <i id="gear_icon_2" class="notification_bar_icon fa fa-gear font_light"></i>
         <a class="notification_bar_text font_light">{% trans "Settings" %}</a>
     </div>
-    <div class="vertical">
+    <div class="vertical scroll_y">
     <div class="box_body">
         <div class="field horizontal align_vertical_center">
             <i class="fa fa-globe fa-spin-hover font_light font_20 margin_right_20"></i>

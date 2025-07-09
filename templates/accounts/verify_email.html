@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+{% load static %}
+{% load i18n %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans 'Verify Your Email' %}</title>
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        ::selection {
+            background-color: rgb(42, 39, 51);
+            color: white;
+        }
+        body { background: #181824; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        .container { max-width: 480px; margin: 40px auto; background: #232336; border-radius: 10px; box-shadow: 0 2px 16px rgba(0,0,0,0.18); padding: 32px 24px; }
+        .header { text-align: center; margin-bottom: 24px; }
+        .header img { width: 48px; margin-bottom: 8px; filter: brightness(0.8) invert(1); }
+        .title { font-size: 24px; color: #fff; margin-bottom: 8px; letter-spacing: 1px; }
+        .subtitle { font-size: 16px; color: #bdbddd; margin-bottom: 24px; }
+        .button { display: inline-block; background: #7c5cff; color: #fff !important; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 16px; font-weight: bold; margin: 24px 0; box-shadow: 0 2px 8px rgba(124,92,255,0.18); transition: background 0.2s; }
+        .button:hover { background: #6c4ee6; }
+        .footer { font-size: 13px; color: #8888aa; text-align: center; margin-top: 32px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{% static 'images/email.png' %}" alt="Verify Email" />
+            <div class="title">{% trans 'Verify your email address' %}</div>
+        </div>
+        <div class="subtitle">{% trans 'Thank you for signing up! Please confirm your email address by clicking the button below.' %}
+        </div>
+        <div style="text-align:center;">
+            <a href="{{ verification_link }}" class="button">{% trans 'Verify Email' %}</a>
+        </div>
+        <div class="footer">
+            {% trans 'If you did not create an account, you can safely ignore this email.' %}<br>
+            &copy; {% now 'Y' %} {% trans 'Social Media App' %}
+        </div>
+    </div>
+</body>
+</html>

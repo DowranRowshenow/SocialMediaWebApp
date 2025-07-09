@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
 from django.urls import reverse_lazy, reverse
+from django.template.loader import render_to_string
 
 from accounts.models import User
 from accounts.forms import SingUpForm, LogInForm
@@ -38,10 +39,11 @@ def send_verification_mail(user, link):
     message = f"Hi click the link to verify your account {link}"
     sender = settings.EMAIL_HOST_USER
     receiver = [user.email]
-    try: send_mail(subject, message, sender, receiver)
-    except Exception as e: 
+    html_message = render_to_string('accounts/verify_email.html', {'verification_link': link, 'user': user})
+    try:
+        send_mail(subject, message, sender, receiver, html_message=html_message)
+    except Exception as e:
         print(e)
-
         return False
     return True
 

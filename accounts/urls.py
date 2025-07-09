@@ -6,6 +6,7 @@ from . import views
 
 
 urlpatterns = [
+    #path('verification/', TemplateView.as_view(template_name = 'accounts/verify_email.html'), name="email"),
     path('login/', views.CustomLoginView.as_view(), name="login"),
     path('signup/', views.CustomSignupView.as_view(), name="signup"),
     path('verify/<token>', views.VerifyView.as_view(), name='verify'),
@@ -39,4 +40,5 @@ urlpatterns = [
     ),
     path('<int:pk>/edit_profile/', views.EditProfileView.as_view(), name="edit_profile"),
     path('logout/', views.LogoutView.as_view(), name="logout"),
+
 ]
