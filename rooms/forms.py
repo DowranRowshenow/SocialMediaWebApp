@@ -1,9 +1,7 @@
 from django import forms
-from django.db.models import Q
 from django.utils.translation import gettext as _
 
-from accounts.models import User
-from .models import Message, Room
+from .models import Message
 
 
 class MessageForm(forms.ModelForm):
@@ -11,11 +9,13 @@ class MessageForm(forms.ModelForm):
 
     class Meta:
         model = Message
-        fields = ('content',)
-        
+        fields = ("content",)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['content'].widget.attrs.update({
-            'class': 'sender_input cur_text font_light',
-            'placeholder': _('Type a message')
-        })
+        self.fields["content"].widget.attrs.update(
+            {
+                "class": "sender_input cur_text font_light",
+                "placeholder": _("Type a message"),
+            }
+        )

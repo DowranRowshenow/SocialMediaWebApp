@@ -1,0 +1,7 @@
+[flake8]
+exclude = .git,__pycache__,migrations,settings.py,.venv
+max-line-length = 120
+ignore = E501, W503, E203, E701 
+#, C0114, C0115, C0116, R0903, R0801
+# Enable Django plugin
+plugins = flake8_django 

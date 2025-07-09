@@ -1,3 +1,4 @@
+# type: ignore
 import uuid
 import os
 from PIL import Image
@@ -16,20 +17,16 @@ class SingUpForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = (
-        	'username',
-            'email',
-            "password1",
-            "password2",
-        )
+        fields = ("username", "email", "password1", "password2")
 
-    def save(self, commit=True): 
+    def save(self, commit=True):
         user = super().save(commit=False)
         user.auth_token = str(uuid.uuid4())
         user.hash = str(uuid.uuid4())
         user.is_active = False
 
-        if commit: user.save()
+        if commit:
+            user.save()
 
         return user
 
@@ -38,21 +35,31 @@ class EditProfileForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('image', 'photo', 'first_name', 'last_name', 'bio', 'location', 'gender', 'birth_date')
+        fields = (
+            "image",
+            "photo",
+            "first_name",
+            "last_name",
+            "bio",
+            "location",
+            "gender",
+            "birth_date",
+        )
 
-    def init(self, user): 
+    def init(self, user):
         image = self.cleaned_data.get("image")
-        if image == user.image: 
+        if image == user.image:
             pass
-        elif image.size > 4*1024*1024:
-                self.add_error("image", _("Uploading files more than 4MB is not allowed."))
+        elif image.size > 4 * 1024 * 1024:
+            self.add_error("image", _("Uploading files more than 4MB is not allowed."))
         else:
             try:
                 # Thumbnail
                 THUMBNAIL_SIZE = (160, 160)  # dimensions
                 picture = Image.open(image)
                 # Convert to RGB if necessary
-                if picture.mode not in ('L', 'RGB'): picture = picture.convert('RGB')
+                if picture.mode not in ("L", "RGB"):
+                    picture = picture.convert("RGB")
                 # Create a thumbnail and use antialiasing for a smoother thumbnail
                 try:
                     picture.thumbnail(THUMBNAIL_SIZE, Image.Resampling.LANCZOS)
@@ -60,26 +67,38 @@ class EditProfileForm(forms.ModelForm):
                     print("ERROR:", e)
                 # Fetch image into memory
                 temp_handle = BytesIO()
-                picture.save(temp_handle, 'png')
+                picture.save(temp_handle, "png")
                 temp_handle.seek(0)
                 # Remove old image
                 if user.image.name != "profile.png":
-                    try: os.remove(user.image.path)
-                    except Exception as e: print("ERROR:", e)
+                    try:
+                        os.remove(user.image.path)
+                    except Exception as e:
+                        print("ERROR:", e)
                 if user.photo.name != "profile.png":
-                    try: os.remove(user.photo.path)
-                    except Exception as e: print("ERROR:", e)
+                    try:
+                        os.remove(user.photo.path)
+                    except Exception as e:
+                        print("ERROR:", e)
                 # Rename new image
-                try: os.remove(f"{settings.MEDIA_ROOT}\\uploads\\profile\\{user.username}.png")
-                except Exception as e: print("ERROR:", e)
+                try:
+                    os.remove(
+                        f"{settings.MEDIA_ROOT}\\uploads\\profile\\{user.username}.png"
+                    )
+                except Exception as e:
+                    print("ERROR:", e)
                 image.name = f"{user.username}.png"
                 # Save new image
                 file_name, file_ext = os.path.splitext(image.name)
-                suf = SimpleUploadedFile(file_name + file_ext, temp_handle.read(), content_type='image/png')
+                suf = SimpleUploadedFile(
+                    file_name + file_ext, temp_handle.read(), content_type="image/png"
+                )
                 self.instance.photo = suf
                 self.instance.image = image
-            except:
-                self.add_error("image", _("Could not create thumbnail. Is the file type valid?"))
+            except Exception:
+                self.add_error(
+                    "image", _("Could not create thumbnail. Is the file type valid?")
+                )
 
 
 class LogInForm(AuthenticationForm):

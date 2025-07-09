@@ -1,4 +1,4 @@
-class AccountErrors():
+class AccountErrors:
     page = "pg=profile"
     c10ae = "e=c10ae"
     c95ae = "e=c95ae"

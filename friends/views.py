@@ -1,13 +1,14 @@
+# type: ignore
 from django.views.generic import View, FormView
 from django.shortcuts import redirect, HttpResponseRedirect
 from django.urls import reverse
 
-from asgiref.sync import async_to_sync
-#from channels.layers import get_channel_layer
+# from asgiref.sync import async_to_sync
+# from channels.layers import get_channel_layer
 
 from accounts.models import User
 from .forms import FriendRequestForm
-from .models import FriendList, FriendRequest
+from .models import FriendRequest  # , FriendList
 
 
 class FriendRequestView(FormView):
@@ -28,19 +29,20 @@ class FriendRequestView(FormView):
                 "receiver_image": friend_request.receiver.photo.url
             })
         """
-        return redirect(self.request.META.get('HTTP_REFERER'))
+        return redirect(self.request.META.get("HTTP_REFERER"))
 
     def form_invalid(self, form):
-        return redirect(self.request.META.get('HTTP_REFERER'))
+        return redirect(self.request.META.get("HTTP_REFERER"))
 
 
 class FriendRequestAcceptView(View):
-    
     def get(self, request, id):
-        #channel_layer = get_channel_layer()
+        # channel_layer = get_channel_layer()
         friend = User.objects.filter(id=id).first()
         if friend:
-            friend_request = FriendRequest.objects.filter(sender=friend, receiver=request.user).first()
+            friend_request = FriendRequest.objects.filter(
+                sender=friend, receiver=request.user, is_active=True
+            ).first()
             if friend_request:
                 friend_request.accept()
                 """
@@ -51,18 +53,19 @@ class FriendRequestAcceptView(View):
                 })
                 """
         try:
-            return redirect(request.META.get('HTTP_REFERER'))
-        except:
-            return HttpResponseRedirect(reverse('main'))
+            return redirect(request.META.get("HTTP_REFERER"))
+        except Exception:
+            return HttpResponseRedirect(reverse("posts"))
 
 
 class FriendRequestCancelView(View):
-    
     def get(self, request, id):
-        #channel_layer = get_channel_layer()
+        # channel_layer = get_channel_layer()
         friend = User.objects.filter(id=id).first()
         if friend:
-            friend_request = FriendRequest.objects.filter(sender=request.user, receiver=friend).first()
+            friend_request = FriendRequest.objects.filter(
+                sender=request.user, receiver=friend
+            ).first()
             if friend_request:
                 friend_request.cancel()
                 """
@@ -73,18 +76,19 @@ class FriendRequestCancelView(View):
                 })
                 """
         try:
-            return redirect(request.META.get('HTTP_REFERER'))
-        except:
-            return HttpResponseRedirect(reverse('main'))
+            return redirect(request.META.get("HTTP_REFERER"))
+        except Exception:
+            return HttpResponseRedirect(reverse("posts"))
 
 
 class FriendRequestDeclineView(View):
-    
     def get(self, request, id):
-        #channel_layer = get_channel_layer()
+        # channel_layer = get_channel_layer()
         friend = User.objects.filter(id=id).first()
         if friend:
-            friend_request = FriendRequest.objects.filter(sender=friend, receiver=request.user).first()
+            friend_request = FriendRequest.objects.filter(
+                sender=friend, receiver=request.user
+            ).first()
             if friend_request:
                 friend_request.decline()
                 """
@@ -95,6 +99,6 @@ class FriendRequestDeclineView(View):
                 })
                 """
         try:
-            return redirect(request.META.get('HTTP_REFERER'))
-        except:
-            return HttpResponseRedirect(reverse('main'))
+            return redirect(request.META.get("HTTP_REFERER"))
+        except Exception:
+            return HttpResponseRedirect(reverse("posts"))
