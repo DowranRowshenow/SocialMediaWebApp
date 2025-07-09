@@ -20,13 +20,13 @@ Get a new `Secret key` from django and copy to the `.env`
 # `WINDOWS`
 
 Install and Setup `Python` if you dont have. Project uses `3.13.5` version
-`https://www.python.org/downloads/`
+- https://www.python.org/downloads/
 
 Install and Setup `Git` if you dont have. 
-`https://git-scm.com/downloads`
+- https://git-scm.com/downloads
 
 Install and Setup `MySql` if you dont have
-`https://www.mysql.com/downloads/`
+- https://www.mysql.com/downloads/
 
 Clone `Git` repository
 

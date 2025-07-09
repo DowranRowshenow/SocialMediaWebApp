@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-# from cloudinary.models import CloudinaryField
+from cloudinary.models import CloudinaryField
 
 
 MALE = "MALE"
@@ -15,12 +15,16 @@ class User(AbstractUser):
     email = models.EmailField(("email address"), unique=True)
     auth_token = models.CharField(max_length=100, unique=True)
     hash = models.CharField(max_length=36, unique=True)
-    image = models.ImageField(upload_to="uploads/profile/", default="profile.jpg")
-    # image = CloudinaryField(upload_to='uploads/profile/', default='profile.png')
+    # image = models.ImageField(upload_to="uploads/profile/", default="profile.jpg")
+    image = CloudinaryField("image", folder="uploads/profile/", default="profile.jpg")
+    """
     photo = models.ImageField(
-        upload_to="uploads/profile/compressed/", default="profile.jpg"
+       upload_to="uploads/profile/compressed/", default="profile.jpg"
     )
-    # photo = CloudinaryField(upload_to='uploads/profile/compressed/', default='profile.png')
+    """
+    photo = CloudinaryField(
+        "image", folder="uploads/profile/compressed/", default="profile.jpg"
+    )
     is_online = models.BooleanField(default=False)  # type: ignore
     bio = models.TextField(max_length=250, blank=True)
     birth_date = models.DateField(blank=True, null=True)

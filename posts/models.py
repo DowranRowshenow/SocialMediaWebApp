@@ -1,7 +1,8 @@
 # type: ignore
-import os
+import cloudinary.uploader
 from django.db import models
 from django.dispatch import receiver
+from cloudinary.models import CloudinaryField
 
 from socialmedia import settings
 
@@ -28,7 +29,8 @@ class Post(models.Model):
     )
     content = models.TextField(max_length=250, blank=True)
     comments = models.ManyToManyField(PostComment, blank=True, related_name="comments")
-    image = models.ImageField(upload_to="uploads/posts/", blank=True)
+    # image = models.ImageField(upload_to="uploads/posts/", blank=True)
+    image = CloudinaryField("image", folder="uploads/posts/", blank=True)
     liked_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="post_liked_user"
     )
@@ -76,5 +78,14 @@ class Post(models.Model):
 @receiver(models.signals.post_delete, sender=Post)
 def auto_delete_file_on_delete(sender, instance, **kwargs):
     if instance.image:
+        # TODO: Switch for Local delete
+        """
         if os.path.isfile(instance.image.path):
             os.remove(instance.image.path)
+        """
+        # For CloudinaryField, delete using public_id
+        if hasattr(instance.image, "public_id") and instance.image.public_id:
+            try:
+                cloudinary.uploader.destroy(instance.image.public_id)
+            except Exception as e:
+                print("Cloudinary delete error:", e)

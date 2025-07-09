@@ -29,7 +29,7 @@ class CustomSignupView(CreateView):
 
     def get_success_url(self):
         link = self.request.build_absolute_uri(
-            reverse("verify", args=(self.object.auth_token,))
+            reverse("verify", args=(self.object.auth_token,))  # type: ignore
         )
         if not send_verification_mail(self.object, link):
             return HttpResponseRedirect(reverse("signup"))

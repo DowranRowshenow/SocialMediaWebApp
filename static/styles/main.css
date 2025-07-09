@@ -309,8 +309,9 @@
 }
 
 #image_section_image {
-    max-width: 85vw;
-    max-height: 85vh;
+    object-fit: contain;
+    width: 85vw;
+    height: 85vh;
     border-radius: 5px;
 }
 
