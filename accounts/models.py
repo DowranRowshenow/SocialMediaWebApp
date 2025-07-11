@@ -15,6 +15,7 @@ class User(AbstractUser):
     email = models.EmailField(("email address"), unique=True)
     auth_token = models.CharField(max_length=100, unique=True)
     hash = models.CharField(max_length=36, unique=True)
+    # TODO: Switch to local
     # image = models.ImageField(upload_to="uploads/profile/", default="profile.jpg")
     image = CloudinaryField("image", folder="uploads/profile/", default="profile.jpg")
     """

@@ -29,6 +29,7 @@ class Post(models.Model):
     )
     content = models.TextField(max_length=250, blank=True)
     comments = models.ManyToManyField(PostComment, blank=True, related_name="comments")
+    # TODO: Switch to local
     # image = models.ImageField(upload_to="uploads/posts/", blank=True)
     image = CloudinaryField("image", folder="uploads/posts/", blank=True)
     liked_users = models.ManyToManyField(

@@ -65,3 +65,101 @@ Additionally create super user after `migrate`
 
 # `LINUX`
 
+Update sudo if needed
+    
+    sudo apt update
+
+Install Git if haven't
+    
+    sudo apt install git
+
+Clone Repository
+    
+    git clone 'https://github.com/DowranRowshenow/SocialMediaWebApp.git'
+
+Go to project directory
+    
+    cd SocialMediaWebApp
+
+Install `3.13.5` Python version if needed
+    
+    sudo apt install python3-3.13.5
+
+Install Pip if you haven't
+    
+    sudo apt install pip
+
+Install Virtual Environment if you haven't 
+    
+    sudo apt install python3.13.5-venv
+
+Create Virtual Environment
+    
+    python3 -m venv .venv
+
+Activate Virtual Environment
+    
+    source venv/bin/activate
+
+Configure mirror repository for pip if needed
+    
+    mkdir -p ~/.pip
+    nano ~/.pip/pip.conf
+
+Write into `pip.conf`
+    
+    [global]
+    index-url=https://mirrors.tencent.com/pypi/simple/
+    extra-index-url=https://mirrors.tencent.com/pypi/simple/
+    default=https://pypi.org/simple
+
+Install Requirements.txt
+    
+    python3 -m pip install -r requirements.txt
+
+Install Gettext if you haven't
+    
+    sudo apt install gettext
+
+Install `MySQL` Server
+
+    sudo apt install mysql-server
+
+Setup `MySQL` Server
+
+    sudo systemctl start mysql
+    sudo systemctl enable mysql
+
+Secure `MySQL` Installation
+    sudo mysql_secure_installation
+
+Log in to `MySQL`
+
+    sudo mysql -u root -p
+
+Create a Database and User
+
+    CREATE DATABASE myproject CHARACTER SET UTF8MB4;
+    CREATE USER 'myuser'@'localhost' IDENTIFIED BY 'mypassword';
+    GRANT ALL PRIVILEGES ON myproject.* TO 'myuser'@'localhost';
+    FLUSH PRIVILEGES;
+    EXIT;
+
+(Optional) Allow Remote Connections 
+
+Edit `/etc/mysql/mysql.conf.d/mysqld.cnf`
+
+Change `bind-address = 127.0.0.1` to `bind-address = 0.0.0.0` to allow remote connections.
+
+Restart `MySQL` Server
+
+    sudo systemctl restart mysql
+
+Install `MySQL CLient` before installing pip `requirements.txt`
+
+    sudo apt install mysql-client libmysqlclient-dev
+
+Test Connection
+
+    mysql -u myuser -p -h localhost myproject
+    

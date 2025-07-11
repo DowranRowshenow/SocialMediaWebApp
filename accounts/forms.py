@@ -143,7 +143,7 @@ class EditProfileForm(forms.ModelForm):
         image = self.cleaned_data.get("image")
         if image == user.image:
             pass
-        elif image.size > 4 * 1024 * 1024:
+        elif hasattr(image, "size") and image.size > 4 * 1024 * 1024:
             self.add_error("image", _("Uploading files more than 4MB is not allowed."))
         else:
             # TODO: Switch if you are in Local
